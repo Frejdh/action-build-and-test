@@ -1,0 +1,50 @@
+name: Maven build and test
+description: Action for building and testing maven repositories
+
+inputs:
+  java-version:
+    description: JDK version to use. Default is 8 and is based on the distribution 'adopt' (OpenJDK).
+    required: false
+    default: '8'
+
+  build-arguments:
+    description: Arguments for the maven build. Default 'mvn -B package -DskipTests -e [CUSTOM ARGS]'
+    required: false
+
+  test-arguments:
+    description: Arguments for the maven test run. Default 'mvn clean test -e [CUSTOM ARGS]'
+    required: false
+
+  integration-test-arguments:
+    description: Arguments for the maven integration test run (should be configured if enabled). Default 'mvn clean test -e [CUSTOM ARGS]'
+    required: false
+
+  run-integration-tests:
+    description: Whether to enable the extra maven test run intended for integration tests. False by default
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout branch code
+      uses: actions/checkout@v2
+    - name: Set up JDK ${{ inputs.java-version }}
+      uses: actions/setup-java@v2
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: 'adopt'
+        cache: maven
+    - name: Build project
+      run: >
+        mvn -B install -DskipTests -e
+        ${{ inputs.build-arguments }}
+    - name: Run unit tests
+      run: >
+        mvn clean test -e
+        ${{ inputs.test-arguments }}
+    - name: Run integration tests
+      if: contains(['true', 'True', 'yes', 'Yes', 'y', 'Y'], inputs.run-integration-tests)
+      run: >
+        mvn clean test -e
+        ${{ inputs.integration-test-arguments }}
