@@ -3,9 +3,19 @@ description: Action for building and testing maven repositories
 
 inputs:
   java-version:
-    description: JDK version to use. Default is 8 and is based on the distribution 'adopt' (OpenJDK).
+    description: JDK version to use. Default is '17'.
     required: false
-    default: '8'
+    default: '17'
+
+  java-distribution:
+    description: JDK distribution to use. Default is 'temurin'.
+    required: false
+    default: 'temurin'
+
+  cache-id:
+    description: ID (subkey) for the cache. Currently defined by '${{ runner.os }}-maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}'.
+    required: false
+    default: 'v1'
 
   build-arguments:
     description: Arguments for the maven build. Default 'mvn -B package -DskipTests -e [CUSTOM ARGS]'
@@ -16,7 +26,7 @@ inputs:
     required: false
 
   integration-test-arguments:
-    description: Arguments for the maven integration test run (should be configured if enabled). Default 'mvn clean test -e [CUSTOM ARGS]'
+    description: Arguments for the maven integration test run (should be configured when enabled). Default 'mvn clean test -e [CUSTOM ARGS]'
     required: false
 
   run-integration-tests:
@@ -29,12 +39,18 @@ runs:
   steps:
     - name: Checkout branch code
       uses: actions/checkout@v2
-    - name: Set up JDK ${{ inputs.java-version }}
+    - name: Set up JDK ${{ inputs.java-version }} (${{ inputs.java-distribution }})
       uses: actions/setup-java@v2
       with:
         java-version: ${{ inputs.java-version }}
-        distribution: 'adopt'
-        cache: maven
+        distribution: ${{ inputs.java-distribution }}
+    - name: Set up cache for Maven repository
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
     - name: Build project
       run: >
         mvn -B install -DskipTests -e
