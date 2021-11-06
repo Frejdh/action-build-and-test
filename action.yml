@@ -36,6 +36,8 @@ inputs:
 
 runs:
   using: composite
+  env: 
+    OS_NAME: ${{ runner.os || matrix.config.os || 'generic' }}
   steps:
     - name: Checkout branch code
       uses: actions/checkout@v2
@@ -48,9 +50,9 @@ runs:
       uses: actions/cache@v2
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
+        key: ${{ env.OS_NAME }}-maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ runner.os }}-maven-
+          ${{ env.OS_NAME }}-maven-
     - name: Build project
       run: >
         mvn -B install -DskipTests -e
