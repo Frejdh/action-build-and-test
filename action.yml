@@ -13,7 +13,7 @@ inputs:
     default: 'temurin'
 
   cache-id:
-    description: ID (subkey) for the cache. Currently defined by 'maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}'.
+    description: ID (subkey) for the cache'
     required: false
     default: 'v1'
 
@@ -52,14 +52,17 @@ runs:
         restore-keys: |
           maven-
     - name: Build project
+      shell: bash
       run: >
         mvn -B install -DskipTests -e
         ${{ inputs.build-arguments }}
     - name: Run unit tests
+      shell: bash
       run: >
         mvn clean test -e
         ${{ inputs.test-arguments }}
     - name: Run integration tests
+      shell: bash
       if: inputs.run-integration-tests == 'true' || inputs.run-integration-tests == 'True'
       run: >
         mvn clean test -e
