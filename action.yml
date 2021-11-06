@@ -60,7 +60,7 @@ runs:
         mvn clean test -e
         ${{ inputs.test-arguments }}
     - name: Run integration tests
-      if: contains(['true', 'True', 'yes', 'Yes', 'y', 'Y'], inputs.run-integration-tests)
+      if: inputs.run-integration-tests === 'true' || inputs.run-integration-tests === 'True'
       run: >
         mvn clean test -e
         ${{ inputs.integration-test-arguments }}
