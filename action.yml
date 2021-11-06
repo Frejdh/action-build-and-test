@@ -13,7 +13,7 @@ inputs:
     default: 'temurin'
 
   cache-id:
-    description: ID (subkey) for the cache. Currently defined by '${{ runner.os }}-maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}'.
+    description: ID (subkey) for the cache. Currently defined by 'maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}'.
     required: false
     default: 'v1'
 
@@ -36,8 +36,6 @@ inputs:
 
 runs:
   using: composite
-  env: 
-    OS_NAME: ${{ runner.os || matrix.config.os || 'generic' }}
   steps:
     - name: Checkout branch code
       uses: actions/checkout@v2
@@ -50,9 +48,9 @@ runs:
       uses: actions/cache@v2
       with:
         path: ~/.m2/repository
-        key: ${{ env.OS_NAME }}-maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
+        key: maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
-          ${{ env.OS_NAME }}-maven-
+          maven-
     - name: Build project
       run: >
         mvn -B install -DskipTests -e
