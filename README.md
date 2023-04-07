@@ -8,12 +8,21 @@ Create a file `.github/workflows/optional-filename.yml` located in your Github p
 ```yaml
 name: Current Build
 
+env:
+  DEFAULT_GIT_REF: 'master'
+
 on:
   push:
     branches: [ master, main ]
     paths-ignore:
       - '**.md'
   pull_request:
+  workflow_dispatch:
+  inputs:
+    ref:
+      description: Git reference (branch/commit)
+      required: false
+      default: 'master'
 
 jobs:
   test_pull_request:
@@ -23,7 +32,7 @@ jobs:
         os: [ ubuntu-latest, windows-latest ]
     steps:
       - name: Build and test code
-        uses: Frejdh/action-build-and-test@v1.0.0
+        uses: Frejdh/action-build-and-test@v1.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
@@ -35,4 +44,5 @@ jobs:
           integration-test-arguments: >
             "-Dtest.integration.enabled=true"
             "-Dapi-keys.github=$GITHUB_TOKEN"
+          commitish: "${{ github.event.inputs.ref || env.DEFAULT_GIT_REF }}"
 ```
