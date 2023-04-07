@@ -34,11 +34,17 @@ inputs:
     required: false
     default: 'false'
 
+  commitish:
+    description: Git reference (branch/commit)
+    required: false
+
 runs:
   using: composite
   steps:
     - name: Checkout branch code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
+      with:
+        ref: "${{ inputs.commitish }}"
     - name: Set up JDK ${{ inputs.java-version }} (${{ inputs.java-distribution }})
       uses: actions/setup-java@v2
       with:
