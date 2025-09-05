@@ -32,11 +32,11 @@ jobs:
         os: [ ubuntu-latest, windows-latest ]
     steps:
       - name: Build and test code
-        uses: Frejdh/action-build-and-test@v1.1.0
+        uses: Frejdh/action-build-and-test@v2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
-          java-version: 17
+          java-version: 21
           cache-id: v1
           run-integration-tests: true
           test-arguments: >

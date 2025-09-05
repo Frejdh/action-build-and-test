@@ -3,9 +3,9 @@ description: Action for building and testing maven repositories
 
 inputs:
   java-version:
-    description: JDK version to use. Default is '17'.
+    description: JDK version to use. Default is '21'.
     required: false
-    default: '17'
+    default: '21'
 
   java-distribution:
     description: JDK distribution to use. Default is 'temurin'.
@@ -15,7 +15,7 @@ inputs:
   cache-id:
     description: ID (subkey) for the cache'
     required: false
-    default: 'v1'
+    default: 'v2'
 
   build-arguments:
     description: Arguments for the maven build. Default 'mvn -B package -DskipTests -e [CUSTOM ARGS]'
@@ -42,16 +42,16 @@ runs:
   using: composite
   steps:
     - name: Checkout branch code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
       with:
         ref: "${{ inputs.commitish }}"
     - name: Set up JDK ${{ inputs.java-version }} (${{ inputs.java-distribution }})
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v5
       with:
         java-version: ${{ inputs.java-version }}
         distribution: ${{ inputs.java-distribution }}
     - name: Set up cache for Maven repository
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
