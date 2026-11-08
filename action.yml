@@ -3,9 +3,9 @@ description: Action for building and testing maven repositories
 
 inputs:
   java-version:
-    description: JDK version to use. Default is '21'.
+    description: JDK version to use. Default is '25'.
     required: false
-    default: '21'
+    default: '25'
 
   java-distribution:
     description: JDK distribution to use. Default is 'temurin'.
@@ -42,16 +42,16 @@ runs:
   using: composite
   steps:
     - name: Checkout branch code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         ref: "${{ inputs.commitish }}"
     - name: Set up JDK ${{ inputs.java-version }} (${{ inputs.java-distribution }})
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v6
       with:
         java-version: ${{ inputs.java-version }}
         distribution: ${{ inputs.java-distribution }}
     - name: Set up cache for Maven repository
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ~/.m2/repository
         key: maven-${{ inputs.cache-id }}-${{ hashFiles('**/pom.xml') }}
